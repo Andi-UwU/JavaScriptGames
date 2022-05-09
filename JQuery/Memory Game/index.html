@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="styles.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    </head>
+    <body>
+        <div id="container">
+            
+        </div>
+
+        <script>
+            var placeHolder = "";
+            var noElements = 16;
+            var noCols = 4;
+            var noRows = noElements/noCols;
+            var valuesArray = shuffledArray();
+            var activeCells = 0;
+            var cell1;
+            var cell2;
+
+            $(function(){
+                var table = $("<table></table>");
+
+                for (let i = 0; i < noRows; i++){
+
+                    let row = $("<tr></tr>");
+                    for(let j = 0; j < noCols; j++){
+
+                        let index = noCols * i + j;
+
+                        row.append($("<td></td>")
+                            .html(placeHolder)
+                            .val(valuesArray[index])
+                            .attr("id", index)
+                            .click(cellClicked));
+                    }
+                    table.append(row);
+                }
+                var container = $("#container");
+                container.append(table);
+            })
+            
+
+            function cellClicked(){
+                activeCells += 1;
+                
+                switch(activeCells){
+                    case 1:
+                      
+                        $(this).css("background", getPhotoSrc($(this).val()));
+                        cell1 = $(this);
+                        
+                        break;
+                    case 2: 
+                        if ($(this).attr("id") == cell1.attr("id")){
+                            activeCells -= 1;
+                            break;
+                        }
+                        $(this).css("background", getPhotoSrc($(this).val()));
+                        cell2 = $(this);
+
+                        if (cell1.val() != cell2.val()){
+                            setTimeout(hideCells, 1000);
+                            break;
+                        }
+                        else{
+                            activeCells = 0;
+                            cell1.off('click', cellClicked);
+                            cell2.off('click', cellClicked);
+                        }
+                        
+                    default: 
+                        break;
+                }
+                //console.log("Active cells: " + activeCells);
+            }
+
+            function hideCells(){
+                cell1.html(placeHolder);
+                cell2.html(placeHolder);
+                cell1.css("background", "goldenrod");
+                cell2.css("background", "goldenrod");
+             
+                activeCells = 0;
+            }
+            function shuffledArray(){
+                let valueArray = [];
+                let noPairs = noElements/2;
+                let mutations = 20;
+                //add elements
+                for(let i = 0; i < noPairs; i++){
+                    valueArray.push(i);
+                    valueArray.push(i);
+                }
+                //shuffle
+                for(let i = 0; i < mutations; i++){
+                    let c1 = Math.floor(Math.random() * 16);
+                    let c2 = Math.floor(Math.random() * 16);
+                 
+                    let aux = valueArray[c1];
+                    valueArray[c1] = valueArray[c2];
+                    valueArray[c2] = aux;
+                }
+                
+                return valueArray;
+            }
+            
+            function getPhotoSrc(value){
+                return "url('images/" + value + ".jpg')";
+            }
+        </script>
+    </body>
+</html>
